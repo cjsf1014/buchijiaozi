@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 文件传输系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #1890ff;
+            margin: 0;
+            font-size: 28px;
+        }
+        .logo p {
+            color: #666;
+            margin-top: 8px;
+        }
+        h1 {
+            color: #1890ff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: none;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #1890ff;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .btn-block {
+            width: 100%;
+            text-align: center;
+        }
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-danger {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #f5222d;
+        }
+        .alert-success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+        }
+        .register-link a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>文件传输系统</h1>
+            <p>安全、高效的文件传输解决方案</p>
+        </div>
+        
+        <div id="errorAlert" class="alert alert-danger"></div>
+        <div id="successAlert" class="alert alert-success"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名或邮箱</label>
+                <input type="text" id="username" name="username" required placeholder="请输入用户名或邮箱">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required placeholder="请输入密码">
+            </div>
+            
+            <button type="submit" class="btn btn-block">登 录</button>
+        </form>
+        
+        <div class="register-link">
+            还没有账号？ <a href="register.html">立即注册</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单值
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 创建表单数据
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+            
+            console.log('发送登录请求:', username, password);
+            
+            // 获取基础URL
+            const baseUrl = window.location.pathname.includes('/file-transfer') ? 
+                            '/file-transfer' : '';
+            
+            // 发送登录请求
+            fetch(`${baseUrl}/api/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('登录响应状态:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess('登录成功！正在跳转...');
+                    
+                    // 保存token到localStorage
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    // 重定向到仪表板
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    showError(data.message || '登录失败');
+                }
+            })
+            .catch(error => {
+                showError('发生错误，请稍后再试。');
+                console.error('错误:', error);
+            });
+        });
+        
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+            
+            document.getElementById('successAlert').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            const successAlert = document.getElementById('successAlert');
+            successAlert.textContent = message;
+            successAlert.style.display = 'block';
+            
+            document.getElementById('errorAlert').style.display = 'none';
+        }
+    </script>
+</body>
+</html> 

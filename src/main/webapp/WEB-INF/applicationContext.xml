@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Scan for components -->
+    <context:component-scan base-package="com.filetransfer">
+        <!-- 排除控制器，让spring-mvc.xml处理它们 -->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+        <!-- 排除JwtUtil，让spring-mvc.xml处理它 -->
+        <context:exclude-filter type="assignable" expression="com.filetransfer.util.JwtUtil"/>
+        <!-- 排除Filter，让spring-mvc.xml处理它们 -->
+        <context:exclude-filter type="assignable" expression="com.filetransfer.filter.AuthenticationFilter"/>
+        <context:exclude-filter type="assignable" expression="com.filetransfer.filter.CORSFilter"/>
+    </context:component-scan>
+
+    <!-- Properties configuration -->
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <!-- File transfer task executor -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="25"/>
+    </bean>
+
+    <!-- File monitoring service -->
+    <bean id="fileMonitoringService" class="com.filetransfer.service.FileMonitoringServiceImpl">
+        <property name="monitoringInterval" value="${file.monitoring.interval}"/>
+    </bean>
+
+</beans> 

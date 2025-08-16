@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 文件传输系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 35px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .logo h1 {
+            color: #1890ff;
+            margin: 0;
+            font-size: 28px;
+        }
+        .logo p {
+            color: #666;
+            margin-top: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+            outline: none;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #1890ff;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .btn-block {
+            width: 100%;
+            text-align: center;
+        }
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        .alert-danger {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #f5222d;
+        }
+        .alert-success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+        }
+        .login-link a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .password-strength {
+            height: 5px;
+            margin-top: 8px;
+            border-radius: 2px;
+            background-color: #e9ecef;
+        }
+        .password-strength-bar {
+            height: 100%;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .password-tips {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>文件传输系统</h1>
+            <p>创建您的账户</p>
+        </div>
+        
+        <div id="errorAlert" class="alert alert-danger"></div>
+        <div id="successAlert" class="alert alert-success"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required placeholder="请输入用户名">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input type="email" id="email" name="email" required placeholder="请输入邮箱">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required placeholder="请输入密码">
+                <div class="password-strength">
+                    <div id="passwordStrengthBar" class="password-strength-bar"></div>
+                </div>
+                <div class="password-tips">密码强度：<span id="passwordStrengthText">弱</span></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">确认密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="请再次输入密码">
+            </div>
+            
+            <button type="submit" class="btn btn-block">注 册</button>
+        </form>
+        
+        <div class="login-link">
+            已有账号？ <a href="login.html">立即登录</a>
+        </div>
+    </div>
+
+    <script>
+        // 密码强度检测
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            // 密码强度计算
+            let strength = 0;
+            if (password.length > 6) strength += 20;
+            if (password.length > 10) strength += 20;
+            if (/[A-Z]/.test(password)) strength += 20;
+            if (/[0-9]/.test(password)) strength += 20;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+            
+            // 更新强度条
+            strengthBar.style.width = strength + '%';
+            
+            // 设置颜色和文本
+            if (strength < 40) {
+                strengthBar.style.backgroundColor = '#f5222d';
+                strengthText.textContent = '弱';
+            } else if (strength < 70) {
+                strengthBar.style.backgroundColor = '#faad14';
+                strengthText.textContent = '中';
+            } else {
+                strengthBar.style.backgroundColor = '#52c41a';
+                strengthText.textContent = '强';
+            }
+        });
+    
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单值
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // 验证密码是否匹配
+            if (password !== confirmPassword) {
+                showError('两次输入的密码不一致');
+                return;
+            }
+            
+            // 创建用户对象
+            const user = {
+                username: username,
+                email: email,
+                password: password
+            };
+            
+            console.log('发送注册请求:', JSON.stringify(user));
+            
+            // 获取基础URL
+            const baseUrl = window.location.pathname.includes('/file-transfer') ? 
+                            '/file-transfer' : '';
+            
+            // 发送注册请求
+            fetch(`${baseUrl}/api/users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('API接口未找到，请检查服务器配置。');
+                    }
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            throw new Error('服务器错误: ' + text);
+                        }
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showSuccess('注册成功！正在跳转到登录页面...');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    showError(data.message || '注册失败');
+                }
+            })
+            .catch(error => {
+                showError(error.message || '发生错误，请稍后再试。');
+                console.error('错误:', error);
+            });
+        });
+        
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+            
+            document.getElementById('successAlert').style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            const successAlert = document.getElementById('successAlert');
+            successAlert.textContent = message;
+            successAlert.style.display = 'block';
+            
+            document.getElementById('errorAlert').style.display = 'none';
+        }
+    </script>
+</body>
+</html> 

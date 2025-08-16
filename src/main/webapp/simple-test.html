@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background-color: #0069d9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>简单API测试</h1>
+        
+        <div>
+            <button id="testSimple" class="btn">测试简单端点</button>
+            <button id="testApiSimple" class="btn">测试API简单端点</button>
+            <button id="testEcho" class="btn">测试Echo端点</button>
+            <button id="testUserRegister" class="btn">测试用户注册</button>
+            <button id="testBasic" class="btn">测试基本端点</button>
+            <button id="testApiBasic" class="btn">测试API基本端点</button>
+            <button id="testServlet" class="btn">测试Servlet</button>
+            <button id="testDirect" class="btn">测试直接控制器</button>
+        </div>
+        
+        <div id="result">
+            <p>结果将显示在这里...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('testSimple').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试简单端点...</p>';
+            
+            fetch('/file-transfer/simple-test')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+        
+        document.getElementById('testApiSimple').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试API简单端点...</p>';
+            
+            fetch('/file-transfer/api/simple-test')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+        
+        document.getElementById('testEcho').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试Echo端点...</p>';
+            
+            const testData = {
+                message: "你好，世界!",
+                timestamp: new Date().toISOString()
+            };
+            
+            fetch('/file-transfer/api/echo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(testData)
+            })
+            .then(response => {
+                resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                return response.text();
+            })
+            .then(data => {
+                resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+            });
+        });
+        
+        document.getElementById('testUserRegister').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试用户注册...</p>';
+            
+            const user = {
+                username: "testuser" + Math.floor(Math.random() * 1000),
+                email: "test" + Math.floor(Math.random() * 1000) + "@example.com",
+                password: "password123"
+            };
+            
+            resultDiv.innerHTML += `<p>发送数据: ${JSON.stringify(user)}</p>`;
+            
+            fetch('/file-transfer/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => {
+                resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                return response.text();
+            })
+            .then(data => {
+                resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+            });
+        });
+        
+        document.getElementById('testBasic').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试基本端点...</p>';
+            
+            fetch('/file-transfer/basic-test')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+        
+        document.getElementById('testApiBasic').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试API基本端点...</p>';
+            
+            fetch('/file-transfer/api/basic-test')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+        
+        document.getElementById('testDirect').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试直接控制器...</p>';
+            
+            fetch('/file-transfer/direct-test')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+        
+        document.getElementById('testServlet').addEventListener('click', function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>测试Servlet...</p>';
+            
+            fetch('/file-transfer/test-servlet')
+                .then(response => {
+                    resultDiv.innerHTML += `<p>响应状态: ${response.status}</p>`;
+                    return response.text();
+                })
+                .then(data => {
+                    resultDiv.innerHTML += `<p>响应数据: ${data}</p>`;
+                })
+                .catch(error => {
+                    resultDiv.innerHTML += `<p>错误: ${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html> 
